@@ -1,7 +1,8 @@
 {
-  "name": "vite-react-rescript-starter",
+  "name": "cashscript-tokens-re",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "vite build",
     "clean": "rescript clean -with-deps",
@@ -11,10 +12,14 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@bitauth/libauth": "^1.19.1",
     "@rescript/react": "^0.10.3",
     "@ryyppy/rescript-promise": "^2.1.0",
+    "cashc": "^0.8.0-next.0",
+    "cashscript": "^0.8.0-next.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "rescript-nodejs": "^14.3.1",
     "rescript-webapi": "^0.7.0"
   },
   "devDependencies": {

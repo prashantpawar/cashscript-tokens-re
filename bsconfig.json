@@ -24,7 +24,8 @@
   "bs-dependencies": [
     "@rescript/react",
     "@ryyppy/rescript-promise",
-    "rescript-webapi"
+    "rescript-webapi",
+    "rescript-nodejs"
   ],
   "bs-dev-dependencies": [
     "rescript-vitest"

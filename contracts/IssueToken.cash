@@ -1,0 +1,12 @@
+pragma cashscript 0.8.0;
+
+contract IssueToken(
+
+){
+    function issue(){
+        // Require the covenant contract always lives at index zero with a minting NFT
+        require(this.activeInputIndex == 0);
+        require(tx.outputs[0].lockingBytecode == tx.inputs[0].lockingBytecode);
+        require(tx.outputs[0].tokenCategory   == tx.inputs[0].tokenCategory);
+    }
+}

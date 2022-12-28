@@ -1,0 +1,17 @@
+{
+  "contractName": "IssueToken",
+  "constructorInputs": [],
+  "abi": [
+    {
+      "name": "issue",
+      "inputs": []
+    }
+  ],
+  "bytecode": "OP_INPUTINDEX OP_0 OP_NUMEQUALVERIFY OP_0 OP_OUTPUTBYTECODE OP_0 OP_UTXOBYTECODE OP_EQUALVERIFY OP_0 OP_OUTPUTTOKENCATEGORY OP_0 OP_UTXOTOKENCATEGORY OP_EQUAL",
+  "source": "pragma cashscript 0.8.0;\n\ncontract IssueToken(\n\n){\n    function issue(){\n        // Require the covenant contract always lives at index zero with a minting NFT\n        require(this.activeInputIndex == 0);\n        require(tx.outputs[0].lockingBytecode == tx.inputs[0].lockingBytecode);\n        require(tx.outputs[0].tokenCategory   == tx.inputs[0].tokenCategory);\n    }\n}\n",
+  "compiler": {
+    "name": "cashc",
+    "version": "0.8.0-next.0"
+  },
+  "updatedAt": "2022-12-28T00:31:16.164Z"
+}
