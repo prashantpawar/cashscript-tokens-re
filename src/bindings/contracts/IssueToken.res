@@ -6,3 +6,4 @@ type t = {functions: functions, address: Cashscript.address}
 @send external to: (functions, Cashscript.address, Cashscript.satoshi) => functions = "to"
 @send external addFunds: (functions, unit) => functions = "addFunds"
 @send external withdraw: (functions, unit) => functions = "withdraw"
+@send external send: (functions, unit) => Promise.t<unit> = "send"
