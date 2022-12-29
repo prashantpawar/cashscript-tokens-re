@@ -3,10 +3,82 @@ pragma cashscript 0.8.0;
 contract IssueToken(
 
 ){
-    function issue(){
+    function addFunds(){
         // Require the covenant contract always lives at index zero with a minting NFT
         require(this.activeInputIndex == 0);
         require(tx.outputs[0].lockingBytecode == tx.inputs[0].lockingBytecode);
         require(tx.outputs[0].tokenCategory   == tx.inputs[0].tokenCategory);
+
+        // Now it is convinient to calculate the amount added to the pool of funds
+        int amountSatsAdded = tx.outputs[0].value - tx.inputs[0].value;
+        int amountTokensAdded = tx.outputs[0].tokenAmount - tx.inputs[0].tokenAmount;
+
+        //Determine whether BCH or fungible tokens were contributed to the pool
+        bytes actionIdentifier = 0x00;
+        if (amountSatsAdded > 0) {
+          // Require 1000 sats to pay for future withdrawal fee
+          require(amountSatsAdded == 1000);
+          actionIdentifier = 0x01;
+          actionIdentifier = actionIdentifier + bytes8(amountTokensAdded);
+        } else {
+          // Place a minimum on the amount of funds that can be added
+          // Implicitly require tx.outputs[0].value > tx.inputs[0].value
+          require(amountSatsAdded > 10000);
+          actionIdentifier = actionIdentifier + bytes8(amountSatsAdded);
+        }
+
+        // Require there to be at most three outputs so so additional NFTs can be minted
+        require(tx.outputs.length <= 3);
+
+        // 2nd output contains NFT receipt for the funds added to the pool
+        // Get the tokenCategory of the minting NFT without the minting capability added
+        bytes tokenCategoryReceipt = tx.inputs[0].tokenCategory.split(64)[0];
+        require(tx.outputs[1].tokenCategory == tokenCategoryReceipt);
+
+        // The receipt NFT is sent back to the same address of the first user's input
+        // The NFT commitment of the receipt contains what was added to the pool
+        require(tx.outputs[1].lockingBytecode == tx.inputs[1].lockingBytecode);
+        require(tx.outputs[1].nftCommitment == actionIdentifier);
+
+        // A 3rd output for change is allowed
+        if (tx.outputs.length == 3) {
+          //Require that the change output does not mint any NFTs
+          require(tx.outputs[2].tokenCategory == 0x00);
+        }
+    }
+
+    function withdraw() {
+        // Require the covenant contract always lives at index zero with a minting NFT
+        require(this.activeInputIndex == 0);
+        require(tx.outputs[0].lockingBytecode == tx.inputs[0].lockingBytecode);
+        require(tx.outputs[0].tokenCategory   == tx.inputs[0].tokenCategory);
+
+        // Accept NFT of the correct category as input index1
+        // Validate by checking the tokenCategory without capability
+        bytes tokenCategoryReceipt = tx.inputs[0].tokenCategory.split(64)[0];
+        require(tx.inputs[1].tokenCategory == tokenCategoryReceipt);
+
+        // Read the amount that ws contributed to the pool from the NFT commitment
+        bytes nftCommitmentData = tx.inputs[1].nftCommitment;
+        bytes actionIdentifier, bytes amountToWithdrawBytes = nftCommitmentData.split(2);
+        int amountToWithdraw = int(amountToWithdrawBytes);
+
+        if (actionIdentifier == 0x01) {
+          // Require the pool's token balance to decrease with the amount initially contributed
+          require(tx.outputs[0].tokenAmount == tx.inputs[0].tokenAmount - amountToWithdraw);
+        } else {
+          // Require the pool's BCH balance to decrease with the amount initially contributed
+          require(tx.outputs[0].value == tx.inputs[0].value - amountToWithdraw);
+        }
+
+        // Require there are exactly two output so no additional NFTs can be minted
+        require(tx.outputs.length == 2);
+
+        // Require the amount to withdraw minus fee is sent to the same address of the first uer's input
+        require(tx.outputs[1].lockingBytecode == tx.inputs[1].lockingBytecode);
+        require(tx.outputs[1].value == amountToWithdraw - 1000);
+
+        // require that the receipt NFT is burned
+        require(tx.outputs[1].tokenCategory == 0x00);
     }
 }

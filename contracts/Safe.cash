@@ -1,0 +1,8 @@
+pragma cashscript 0.8.0;
+
+contract Safe(pubkey recipient) {
+  function transfer(sig recipientSig) {
+    require(checkSig(recipientSig, recipient));
+  }
+}
+
