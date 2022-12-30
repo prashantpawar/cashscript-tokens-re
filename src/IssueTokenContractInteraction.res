@@ -53,7 +53,7 @@ let setupCommander = _ => {
       ->then((contract: IssueToken.t) => {
         contract.functions
         ->IssueToken.addFunds()
-        ->IssueToken.to("bchtest:qrd7kvfyk620r79rz0dflx3splh6gwmy2s3jsd9gws", Satoshi(1000))
+        ->IssueToken.to("bchtest:qrd7kvfyk620r79rz0dflx3splh6gwmy2s3jsd9gws", Satoshi(546))
         ->IssueToken.send()
       })
       ->thenResolve(_ => Js.log("done"))

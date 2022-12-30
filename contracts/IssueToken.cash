@@ -35,6 +35,7 @@ contract IssueToken(
         bytes tokenCategoryReceipt = tx.inputs[0].tokenCategory.split(64)[0];
         require(tx.outputs[1].tokenCategory == tokenCategoryReceipt);
 
+        /*
         // The receipt NFT is sent back to the same address of the first user's input
         // The NFT commitment of the receipt contains what was added to the pool
         require(tx.outputs[1].lockingBytecode == tx.inputs[1].lockingBytecode);
@@ -45,6 +46,7 @@ contract IssueToken(
           //Require that the change output does not mint any NFTs
           require(tx.outputs[2].tokenCategory == 0x00);
         }
+        */
     }
 
     function withdraw() {
